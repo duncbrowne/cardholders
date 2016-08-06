@@ -21,23 +21,4 @@ public class RabbitMQEventMessageSender extends RabbitMQMessageQueue
     {
         channel.basicPublish("",queueName, null, SerializationUtils.serialize(object));
     }
-
-    @Override
-    public void close()
-    {
-        try
-        {
-            channel.close();
-            connection.close();
-        }
-        catch (java.io.IOException e)
-        {
-            System.err.println("IOException on close: " + e.getMessage());
-        }
-        catch (java.util.concurrent.TimeoutException e)
-        {
-            System.err.println("TimeoutException on close: " + e.getMessage());
-        }
-    }
-
 }
