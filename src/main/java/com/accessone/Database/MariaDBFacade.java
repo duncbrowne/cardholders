@@ -13,16 +13,14 @@ import java.sql.SQLException;
 public class MariaDBFacade
 {
     private Connection m_DBConnection;
-    private static String CONNECTION_STRING = "jdbc:mariadb://localhost/projecttitan";
-    private static String CONNECTION_USERNAME = "root";
-    private static String CONNECTION_PASSWORD = "root";
+
 
     public MariaDBFacade() throws java.sql.SQLException
     {
         m_DBConnection = DriverManager.getConnection(
-                CONNECTION_STRING,
-                CONNECTION_USERNAME,
-                CONNECTION_PASSWORD);
+                "jdbc:mariadb://localhost/projecttitan",
+                "root",
+                "root");
     }
 
     public boolean GetCardholderRecord(int nCardholderID, String strCardholderRecordJSON)
@@ -37,7 +35,7 @@ public class MariaDBFacade
             // or alternatively, if you don't know ahead of time that
             // the query will be a SELECT...
 
-            if (stmt.execute("SELECT FirstName,Surname FROM cardholders WHERE CardholderID = " + nCardholderID));
+            if (stmt.execute("SELECT FirstName,Surname FROM cardholders WHERE CardholderID = " + nCardholderID))
             {
                 rs = stmt.getResultSet();
 

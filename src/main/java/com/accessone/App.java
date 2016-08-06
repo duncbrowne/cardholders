@@ -20,8 +20,8 @@ public class App
     public static void main( String[] args ) throws IOException, TimeoutException, SQLException
     {
         MariaDBFacade dbFacade = new MariaDBFacade();
-        boolean bRecordFound = dbFacade.GetCardholderRecord(1, null);
-        bRecordFound = dbFacade.GetCardholderRecord(4, null);
+        dbFacade.GetCardholderRecord(1, null);
+        dbFacade.GetCardholderRecord(4, null);
 
          // Set up the RabbitMQ Request message receiver
         RabbitMQRequestMessageReceiver consumer = new RabbitMQRequestMessageReceiver("queue");
