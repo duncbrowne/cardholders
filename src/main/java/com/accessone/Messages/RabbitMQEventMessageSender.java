@@ -8,7 +8,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.SerializationUtils;
 
 /**
- * Created by duncan.browne on 06/08/2016.
+ * Class for sending Event RabbitMQ messages
  */
 public class RabbitMQEventMessageSender extends RabbitMQMessageQueue
 {
