@@ -4,29 +4,31 @@ package com.accessone;
  * Hello world!
  *
  */
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Channel;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+import java.util.HashMap;
+
+import com.accessone.Messages.RabbitMQEventMessageSender;
+import com.accessone.Messages.RabbitMQRequestMessageReceiver;
 
 public class App 
 {
-    private final static String QUEUE_NAME = "TestQueue";
 
-    public static void main( String[] args ) throws java.io.IOException, java.util.concurrent.TimeoutException
+    public static void main( String[] args ) throws IOException, TimeoutException
     {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
+        RabbitMQRequestMessageReceiver consumer = new RabbitMQRequestMessageReceiver("queue");
+        Thread consumerThread = new Thread(consumer);
+        consumerThread.start();
 
-        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-        String message = "Hello World!";
-        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
-        System.out.println(" [x] Sent '" + message + "'");
+        RabbitMQEventMessageSender producer = new RabbitMQEventMessageSender("queue");
 
-        channel.close();
-        connection.close();
+        for (int i = 0; i < 100000; i++) {
+            HashMap message = new HashMap();
+            message.put("message number", i);
+            producer.sendMessage(message);
+            System.out.println("Message Number "+ i +" sent.");
+        }
 
-        System.out.println( "Hello World!" );
     }
 }
