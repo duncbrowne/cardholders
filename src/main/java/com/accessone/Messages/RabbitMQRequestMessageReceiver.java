@@ -60,7 +60,7 @@ public class RabbitMQRequestMessageReceiver extends RabbitMQMessageQueue impleme
         String strReplyMessage = MessageDecomposer.getInstance().decomposeMessage(strBody);
 
         // What do we do here?
-        // Do we need to 
+        // Do we need to
     }
 
     public void handleCancel(String consumerTag) {}
