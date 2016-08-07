@@ -1,5 +1,8 @@
 package com.accessone.Database;
 
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -13,47 +16,94 @@ import java.sql.SQLException;
 public class MariaDBFacade
 {
     private Connection m_DBConnection;
+    private static String CONNECTION_STRING = "jdbc:mariadb://localhost/projecttitan";
+    private static String CONNECTION_USERNAME = "root";
+    private static String CONNECTION_PASSWORD = "root";
 
+    private static MariaDBFacade ourInstance = new MariaDBFacade();
 
-    public MariaDBFacade() throws java.sql.SQLException
+    public static MariaDBFacade getInstance()
     {
-        m_DBConnection = DriverManager.getConnection(
-                "jdbc:mariadb://localhost/projecttitan",
-                "root",
-                "root");
+        return ourInstance;
     }
 
-    public boolean GetCardholderRecord(int nCardholderID, String strCardholderRecordJSON)
+    public MariaDBFacade()
     {
-        Statement stmt = null;
-        ResultSet rs = null;
+        CreateConnection();
+    }
+
+    private boolean CreateConnection()
+    {
+        try
+        {
+            m_DBConnection = DriverManager.getConnection(
+                    CONNECTION_STRING,
+                    CONNECTION_USERNAME,
+                    CONNECTION_PASSWORD);
+
+            return true;
+        }
+        catch (SQLException e)
+        {
+            System.err.println("Unable to create connection : " + CONNECTION_STRING + " with username/password : " +
+            CONNECTION_USERNAME + "//" +CONNECTION_PASSWORD);
+            return false;
+        }
+    }
+
+    public JsonObject GetCardholderRecord(int nCardholderID)
+    {
+        Statement sqlStatement = null;
+        ResultSet resultSet = null;
 
         try
         {
-            stmt = m_DBConnection.createStatement();
+            sqlStatement = m_DBConnection.createStatement();
 
             // or alternatively, if you don't know ahead of time that
             // the query will be a SELECT...
 
-            if (stmt.execute("SELECT FirstName,Surname FROM cardholders WHERE CardholderID = " + nCardholderID))
+            if (sqlStatement.execute("SELECT * FROM cardholders WHERE CardholderID = " + nCardholderID))
             {
-                rs = stmt.getResultSet();
+                resultSet = sqlStatement.getResultSet();
 
-                while (rs.next())
+                if (resultSet.next())
                 {
-                    String FirstName = rs.getString("FirstName");
-                    String Surname = rs.getString("Surname");
-                    System.out.println("First name " + FirstName + " Surname " + Surname);
+                    JsonBuilderFactory factory = Json.createBuilderFactory(null);
+
+                    String strEmployeeNumber = resultSet.getString("EmployeeNumber");
+                    if (strEmployeeNumber == null)
+                        strEmployeeNumber = new String();
+
+                    String strDepartmentID = resultSet.getString("DepartmentID");
+                    if (strDepartmentID == null)
+                        strDepartmentID = new String();
+
+                    String strEmailAddress = resultSet.getString("EmailAddress");
+                    if (strEmailAddress == null)
+                        strEmailAddress = new String();
+
+                    JsonObject joRecordDetails = factory.createObjectBuilder()
+                            .add("cardholderid", resultSet.getString("CardholderID"))
+                            .add("title", resultSet.getString("Title"))
+                            .add("firstname", resultSet.getString("FirstName"))
+                            .add("surname", resultSet.getString("Surname"))
+                            .add("employeenumber", strEmployeeNumber)
+                            .add("departmentid", strDepartmentID)
+                            .add("emailaddress", strEmailAddress)
+                            .build();
+
+                    System.out.println("Cardholder message body : " + joRecordDetails.toString());
+                    return joRecordDetails;
                 }
             }
-            return true;
         }
         catch (SQLException ex){
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
-            return false;
+            return null;
         }
         finally
         {
@@ -62,27 +112,28 @@ public class MariaDBFacade
             // in reverse-order of their creation
             // if they are no-longer needed
 
-            if (rs != null)
+            if (resultSet != null)
             {
                 try
                 {
-                    rs.close();
+                    resultSet.close();
                 }
                 catch (SQLException sqlEx) {} // ignore
 
-                rs = null;
+                resultSet = null;
             }
 
-            if (stmt != null)
+            if (sqlStatement != null)
             {
                 try
                 {
-                    stmt.close();
+                    sqlStatement.close();
                 }
                 catch (SQLException sqlEx) { } // ignore
 
-                stmt = null;
+                sqlStatement = null;
             }
         }
+        return null;
     }
 }

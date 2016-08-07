@@ -87,5 +87,11 @@
           <artifactId>mariadb-java-client</artifactId>
           <version>1.4.6</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.glassfish/javax.json -->
+      <dependency>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.json</artifactId>
+          <version>1.0.4</version>
+      </dependency>
   </dependencies>
 </project>

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.accessone.Messages.Decomposer.MessageDecomposer;
 import org.apache.commons.lang.SerializationUtils;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -49,7 +50,17 @@ public class RabbitMQRequestMessageReceiver extends RabbitMQMessageQueue impleme
     {
         Map map = (HashMap)SerializationUtils.deserialize(body);
         System.out.println("Message Number "+ map.get("message number") + " received.");
+        String strBody = map.get("body").toString();
+        if (strBody.isEmpty())
+        {
+            System.err.println("Body is empty");
+            return;
+        }
 
+        String strReplyMessage = MessageDecomposer.getInstance().decomposeMessage(strBody);
+
+        // What do we do here?
+        // Do we need to 
     }
 
     public void handleCancel(String consumerTag) {}
