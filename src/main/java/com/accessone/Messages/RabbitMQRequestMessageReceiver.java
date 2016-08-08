@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.accessone.Messages.Decomposer.MessageDecomposer;
+import com.accessone.Messages.MessageProducer.RabbitMQMessageProducer;
 import org.apache.commons.lang.SerializationUtils;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -59,8 +60,8 @@ public class RabbitMQRequestMessageReceiver extends RabbitMQMessageQueue impleme
 
         String strReplyMessage = MessageDecomposer.getInstance().decomposeMessage(strBody);
 
-        // What do we do here?
-        // Do we need to
+        // Send the reply message
+        RabbitMQMessageProducer.getInstance().sendMsg(strReplyMessage);
     }
 
     public void handleCancel(String consumerTag) {}

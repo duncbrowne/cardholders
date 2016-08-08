@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 
-import com.accessone.Messages.RabbitMQEventMessageSender;
 import com.accessone.Messages.RabbitMQRequestMessageReceiver;
 
 public class App 
@@ -26,8 +25,7 @@ public class App
         Thread consumerThread = new Thread(consumer);
         consumerThread.start();
 
-        // Setup the RabbitMQ Event message sender
-        RabbitMQEventMessageSender producer = new RabbitMQEventMessageSender("response");
+
 
         /*for (int i = 0; i < 10; i++) {
             HashMap message = new HashMap();
